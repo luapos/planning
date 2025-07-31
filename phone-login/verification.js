@@ -94,7 +94,7 @@ function handleRequestOtp() {
         verificationState.isProcessing = false;
 
         // Redirect to confirm.html page
-        window.location.href = "confirm.html";
+        window.location.href = "/phone-login/confirm.html";
     }, 1500);
 }
 
