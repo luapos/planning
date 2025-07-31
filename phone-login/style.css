@@ -1,0 +1,158 @@
+.hidden {
+    display: none !important;
+}
+
+/* Modern design animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Main container animations */
+#phone-input-screen,
+#otp-input-screen {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* OTP input styling with modern look */
+.otp-digit {
+    font-size: 1.5rem;
+    font-weight: 600;
+    width: 100%;
+    height: 3.5rem;
+    transition: all 0.2s ease;
+    appearance: none;
+    -moz-appearance: textfield;
+}
+
+/* Remove number input arrows */
+.otp-digit::-webkit-outer-spin-button,
+.otp-digit::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* OTP box shadow and active states */
+.otp-digit:focus {
+    border-color: #3B82F6; /* primary color */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* primary with opacity */
+    transform: translateY(-1px);
+}
+
+/* Transitions */
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+/* Button hover effects */
+button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Pulse animation for the countdown */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+#countdown {
+    display: inline-block;
+    padding: 0 3px;
+}
+
+/* Success and error animations */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    20%, 60% {
+        transform: translateX(-4px);
+    }
+    40%, 80% {
+        transform: translateX(4px);
+    }
+}
+
+/* Error state for inputs */
+.error {
+    border-color: #EF4444 !important;
+    animation: shake 0.5s;
+}
+
+/* Shake animation for error feedback */
+.shake {
+    animation: shake 0.5s;
+}
+
+/* Focus visible styles for accessibility */
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #3B82F6;
+    outline-offset: 2px;
+}
+
+/* Card design with glass effect */
+.bg-gradient-to-br {
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Loading button styles */
+#request-otp-btn-loading,
+#verify-otp-btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 480px) {
+    .otp-digit {
+        font-size: 1.4rem;
+        height: 3rem;
+    }
+
+    .rounded-2xl {
+        border-radius: 1rem;
+    }
+}

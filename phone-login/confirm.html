@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác Nhận OTP</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        success: '#10B981',
+                        error: '#EF4444',
+                        warning: '#F59E0B',
+                        text: '#111827',
+                        background: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'components': '8px',
+                        'cards': '12px',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-background font-sans flex items-center justify-center min-h-screen p-4 text-text">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-cards shadow-lg p-8 relative">
+            <div class="h-1 bg-primary absolute top-0 left-0 right-0 rounded-t-cards"></div>
+
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-semibold">Xác Nhận OTP</h1>
+                <p class="text-gray-500 mt-2 text-sm">Nhập mã xác thực để tiếp tục</p>
+            </div>
+
+            <!-- OTP Input Screen -->
+            <div id="otp-input-screen" class="transition-all">
+                <div class="mb-6">
+                    <p class="text-sm text-gray-600 mb-4">Mã xác thực đã được gửi đến <span id="phone-display" class="font-medium text-text"></span></p>
+
+                    <label class="block text-sm font-medium mb-3">Nhập mã OTP</label>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" class="otp-digit w-full px-0 py-3 text-center border border-gray-300 rounded-components focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" maxlength="1" data-index="0">
+                        <input type="text" class="otp-digit w-full px-0 py-3 text-center border border-gray-300 rounded-components focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" maxlength="1" data-index="1">
+                        <input type="text" class="otp-digit w-full px-0 py-3 text-center border border-gray-300 rounded-components focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" maxlength="1" data-index="2">
+                        <input type="text" class="otp-digit w-full px-0 py-3 text-center border border-gray-300 rounded-components focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" maxlength="1" data-index="3">
+                        <input type="text" class="otp-digit w-full px-0 py-3 text-center border border-gray-300 rounded-components focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" maxlength="1" data-index="4">
+                        <input type="text" class="otp-digit w-full px-0 py-3 text-center border border-gray-300 rounded-components focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" maxlength="1" data-index="5">
+                    </div>
+                    <p id="otp-error" class="text-error text-sm mt-2 hidden"></p>
+                </div>
+
+                <div class="text-center mb-6">
+                    <div class="flex items-center justify-center gap-2 text-sm text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Gửi lại mã sau <span id="countdown" class="font-semibold text-primary">60</span> giây</span>
+                    </div>
+                    <button id="resend-otp-btn" class="text-primary hover:text-blue-700 text-sm mt-2 disabled:text-gray-400 disabled:cursor-not-allowed font-medium transition-colors duration-200" disabled>Gửi lại mã</button>
+                </div>
+
+                <div class="space-y-4">
+                    <button id="verify-otp-btn" class="w-full flex justify-center items-center bg-primary text-white py-3 px-4 rounded-components hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300">
+                        <span id="verify-otp-btn-text">Xác nhận</span>
+                        <span id="verify-otp-btn-loading" class="hidden">
+                            <span class="flex items-center">
+                                <svg class="animate-spin mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Đang xử lý...
+                            </span>
+                        </span>
+                    </button>
+
+                    <button id="change-phone-btn" class="w-full flex justify-center items-center bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-components hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Đổi số điện thoại
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-6 text-gray-500 text-sm">
+            © 2025 Hệ thống xác thực OTP
+        </div>
+    </div>
+
+    <script src="confirmation.js"></script>
+</body>
+</html>

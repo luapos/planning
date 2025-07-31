@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập OTP</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        success: '#10B981',
+                        error: '#EF4444',
+                        warning: '#F59E0B',
+                        text: '#111827',
+                        background: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'components': '8px',
+                        'cards': '12px',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-background font-sans flex items-center justify-center min-h-screen p-4 text-text">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-cards shadow-lg p-8 relative">
+            <div class="h-1 bg-primary absolute top-0 left-0 right-0 rounded-t-cards"></div>
+
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-semibold">Đăng Nhập</h1>
+                <p class="text-gray-500 mt-2 text-sm">Xác thực bằng mã OTP</p>
+            </div>
+
+            <!-- Phone Number Input Screen -->
+            <div id="phone-input-screen" class="transition-all">
+                <div class="mb-6">
+                    <label for="phone-input" class="block text-sm font-medium mb-2">Số điện thoại</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                        </div>
+                        <input type="text" id="phone-input" class="w-full pl-10 px-4 py-3 border border-gray-300 rounded-components focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" placeholder="Nhập số điện thoại của bạn">
+                    </div>
+                    <p id="phone-error" class="text-error text-sm mt-2 hidden"></p>
+                </div>
+
+                <button id="request-otp-btn" class="w-full flex justify-center items-center bg-primary text-white py-3 px-4 rounded-components hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300">
+                    <span id="request-otp-btn-text">Xác thực</span>
+                    <span id="request-otp-btn-loading" class="hidden">
+                        <span class="flex items-center">
+                            <svg class="animate-spin mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Đang xử lý...
+                        </span>
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div class="text-center mt-6 text-gray-500 text-sm">
+            © 2025 Hệ thống xác thực OTP
+        </div>
+    </div>
+
+    <script src="verification.js"></script>
+</body>
+</html>
