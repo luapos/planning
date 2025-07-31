@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Quản trị</title>
+    <!-- TailwindCSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @media (prefers-color-scheme: dark) {
+            .dark-mode {
+                background-color: #1f2937;
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans dark:bg-gray-800 dark:text-white transition-colors duration-200">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Dashboard Quản trị</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1" id="greeting">Xin chào Admin – <span id="storeName">Nhà thuốc Hoàng Bảo</span></p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white">
+                        <i class="fas fa-pills text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-300">Doanh thu hôm nay</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="revenue">1.200.000₫</p>
+                <p class="text-xs text-green-500 mt-2"><i class="fas fa-arrow-up mr-1"></i><span id="revenuePercent">12</span>% so với hôm qua</p>
+            </div>
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-300">Đơn hàng hôm nay</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="orders">35 đơn</p>
+                <p class="text-xs text-green-500 mt-2"><i class="fas fa-arrow-up mr-1"></i><span id="ordersPercent">8</span>% so với hôm qua</p>
+            </div>
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-300">Lợi nhuận ước tính</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="profit">300.000₫</p>
+                <p class="text-xs text-green-500 mt-2"><i class="fas fa-arrow-up mr-1"></i><span id="profitPercent">5</span>% so với hôm qua</p>
+            </div>
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-300">Sản phẩm sắp hết hàng</p>
+                <p class="text-2xl font-bold text-red-500" id="lowStock">12 sản phẩm</p>
+                <p class="text-xs text-red-400 mt-2"><i class="fas fa-exclamation-circle mr-1"></i>Cần nhập thêm hàng</p>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Doanh thu 7 ngày gần nhất</h2>
+            <div class="w-full h-64 bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <!-- Mock Chart -->
+                <div id="chart" class="w-full h-full flex items-end justify-between gap-2 relative">
+                    <div class="absolute inset-0 flex flex-col justify-between">
+                        <div class="border-b border-gray-200 dark:border-gray-600"></div>
+                        <div class="border-b border-gray-200 dark:border-gray-600"></div>
+                        <div class="border-b border-gray-200 dark:border-gray-600"></div>
+                        <div class="border-b border-gray-200 dark:border-gray-600"></div>
+                    </div>
+                    <!-- Bars will be dynamically added here -->
+                </div>
+                <div class="flex justify-between mt-2 text-sm text-gray-500 dark:text-gray-400">
+<!--                    <div>24/07</div>-->
+<!--                    <div>25/07</div>-->
+<!--                    <div>26/07</div>-->
+<!--                    <div>27/07</div>-->
+<!--                    <div>28/07</div>-->
+<!--                    <div>29/07</div>-->
+<!--                    <div>30/07</div>-->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Access Menu -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Truy cập nhanh</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="quickAccess">
+                <!-- Menu items will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center mt-8">
+            <button id="backButton" class="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Quay lại Danh sách cửa hàng
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store data (normally would come from backend)
+            const storeData = {
+                name: "Nhà thuốc Hoàng Bảo",
+                today: {
+                    revenue: formatCurrency(Math.floor(Math.random() * 5000000)),
+                    orders: Math.floor(Math.random() * 100) + 1,
+                    profit: formatCurrency(Math.floor(Math.random() * 1000000)),
+                    lowStock: Math.floor(Math.random() * 30) + 1
+                },
+                percentChange: {
+                    revenue: Math.floor(Math.random() * 20) - 5,
+                    orders: Math.floor(Math.random() * 20) - 5,
+                    profit: Math.floor(Math.random() * 20) - 5
+                },
+                weeklyRevenue: [
+                    Math.floor(Math.random() * 5000000),
+                    Math.floor(Math.random() * 5000000),
+                    Math.floor(Math.random() * 5000000),
+                    Math.floor(Math.random() * 5000000),
+                    Math.floor(Math.random() * 5000000),
+                    Math.floor(Math.random() * 5000000),
+                    Math.floor(Math.random() * 5000000)
+                ],
+                quickAccessMenu: [
+                    {
+                        group: "Quản lý hệ thống",
+                        items: [
+                            { name: "Quản lý nhân viên", icon: "fas fa-users" },
+                            { name: "Vai trò & phân quyền", icon: "fas fa-user-shield" },
+                            { name: "Cài đặt hệ thống", icon: "fas fa-cog" }
+                        ]
+                    },
+                    {
+                        group: "Sản phẩm & Tồn kho",
+                        items: [
+                            { name: "Danh sách sản phẩm", icon: "fas fa-box-open" },
+                            { name: "Quản lý danh mục", icon: "fas fa-tags" },
+                            { name: "Kiểm kho", icon: "fas fa-clipboard-check" },
+                            { name: "Nguồn hàng & nhà cung cấp", icon: "fas fa-truck" }
+                        ]
+                    },
+                    {
+                        group: "Bán hàng & Giao dịch",
+                        items: [
+                            { name: "Lịch sử bán hàng", icon: "fas fa-cash-register" },
+                            { name: "Phiếu tính tiền", icon: "fas fa-receipt" },
+                            { name: "Lịch sử nhập hàng", icon: "fas fa-file-import" },
+                            { name: "Trả hàng & hoàn tiền", icon: "fas fa-undo-alt" }
+                        ]
+                    },
+                    {
+                        group: "Khách hàng & CRM",
+                        items: [
+                            { name: "Quản lý khách hàng", icon: "fas fa-user-friends" },
+                            { name: "Chăm sóc khách hàng", icon: "fas fa-comment-dots" },
+                            { name: "Nhắc lịch & lịch hẹn", icon: "fas fa-calendar-check" }
+                        ]
+                    },
+                    {
+                        group: "Thống kê & Báo cáo",
+                        items: [
+                            { name: "Thống kê chi tiết", icon: "fas fa-chart-line" },
+                            { name: "Doanh thu & lợi nhuận", icon: "fas fa-coins" },
+                            { name: "Báo cáo tồn kho", icon: "fas fa-warehouse" }
+                        ]
+                    },
+                    {
+                        group: "Tiện ích",
+                        items: [
+                            { name: "Tiện ích mở rộng", icon: "fas fa-puzzle-piece" },
+                            { name: "Đồng bộ dữ liệu", icon: "fas fa-sync-alt" },
+                            { name: "Trung tâm hỗ trợ", icon: "fas fa-life-ring" }
+                        ]
+                    },
+                    {
+                        group: "Điều hướng",
+                        items: [
+                            { name: "← Quay lại Danh sách cửa hàng", icon: "fas fa-arrow-left" }
+                        ]
+                    }
+                ]
+            };
+
+            // Update store name
+            document.getElementById('storeName').textContent = storeData.name;
+
+            // Update summary cards
+            document.getElementById('revenue').textContent = storeData.today.revenue;
+            document.getElementById('orders').textContent = `${storeData.today.orders} đơn`;
+            document.getElementById('profit').textContent = storeData.today.profit;
+            document.getElementById('lowStock').textContent = `${storeData.today.lowStock} sản phẩm`;
+
+            document.getElementById('revenuePercent').textContent = storeData.percentChange.revenue;
+            document.getElementById('ordersPercent').textContent = storeData.percentChange.orders;
+            document.getElementById('profitPercent').textContent = storeData.percentChange.profit;
+
+            // Color the percentage changes
+            updatePercentageDisplay('revenuePercent', storeData.percentChange.revenue);
+            updatePercentageDisplay('ordersPercent', storeData.percentChange.orders);
+            updatePercentageDisplay('profitPercent', storeData.percentChange.profit);
+
+            // Generate the chart
+            generateChart(storeData.weeklyRevenue);
+
+            // Generate quick access menu
+            generateQuickAccessMenu(storeData.quickAccessMenu);
+
+            // Set up event listeners
+            document.getElementById('backButton').addEventListener('click', function() {
+                alert('Quay lại danh sách cửa hàng');
+            });
+
+            document.getElementById('darkModeToggle').addEventListener('click', function() {
+                document.body.classList.toggle('dark:bg-gray-800');
+                document.body.classList.toggle('dark:text-white');
+                document.documentElement.classList.toggle('dark');
+            });
+
+            // Check system preference for dark mode
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        });
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                maximumFractionDigits: 0
+            }).format(amount) + '₫';
+        }
+
+        function updatePercentageDisplay(elementId, value) {
+            const element = document.getElementById(elementId).parentElement;
+            if (value > 0) {
+                element.classList.remove('text-red-500');
+                element.classList.add('text-green-500');
+                element.querySelector('i').className = 'fas fa-arrow-up mr-1';
+            } else if (value < 0) {
+                element.classList.remove('text-green-500');
+                element.classList.add('text-red-500');
+                element.querySelector('i').className = 'fas fa-arrow-down mr-1';
+            } else {
+                element.classList.remove('text-green-500', 'text-red-500');
+                element.classList.add('text-gray-500');
+                element.querySelector('i').className = 'fas fa-minus mr-1';
+            }
+        }
+
+        function generateChart(data) {
+            const chartContainer = document.getElementById('chart');
+            chartContainer.innerHTML = '';
+
+            const maxValue = Math.max(...data);
+
+            data.forEach((value, index) => {
+                // Ensure a minimum percentage height (at least 5%) for visibility
+                let percentage = (value / maxValue) * 100;
+                percentage = Math.max(percentage, 5); // Minimum height of 5%
+
+                // Create the bar with gradient effect
+                const bar = document.createElement('div');
+                bar.className = 'bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-sm z-10 w-full relative group transition-all duration-300 hover:from-blue-700 hover:to-blue-500 shadow-sm';
+                bar.style.height = `${percentage}%`;
+
+                // Add tooltip with the value on hover
+                const tooltip = document.createElement('div');
+                tooltip.className = 'absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20';
+                tooltip.textContent = formatCurrency(value);
+                bar.appendChild(tooltip);
+
+                // Add value indicator at the top of bar for higher values
+                if (percentage > 50) {
+                    const valueLabel = document.createElement('div');
+                    valueLabel.className = 'absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 dark:text-gray-400 font-medium';
+                    valueLabel.textContent = formatCurrency(value);
+                    bar.appendChild(valueLabel);
+                }
+
+                // Add animation effect
+                bar.style.animation = `growUp 1s ease forwards ${index * 0.1}s`;
+
+                // Create bar wrapper
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'w-full flex justify-center items-end z-10 h-full relative';
+                barWrapper.appendChild(bar);
+
+                // Add day indicator below the bar for mobile
+                const dayIndicator = document.createElement('div');
+                dayIndicator.className = 'absolute -bottom-6 text-xs text-gray-500 dark:text-gray-400';
+                dayIndicator.textContent = `${24 + index}/07`;
+                barWrapper.appendChild(dayIndicator);
+
+                // Add the bar to the chart
+                chartContainer.appendChild(barWrapper);
+            });
+
+
+
+            // Add mobile-specific styles
+            if (!document.getElementById('chart-mobile-styles')) {
+                const mobileStyle = document.createElement('style');
+                mobileStyle.id = 'chart-mobile-styles';
+                mobileStyle.textContent = `
+                    @media (max-width: 640px) {
+                        #chart {
+                            gap: 1px !important;
+                        }
+                        #chart > div {
+                            padding: 0 1px;
+                        }
+                    }
+                `;
+                document.head.appendChild(mobileStyle);
+            }
+        }
+
+        function generateQuickAccessMenu(menuItems) {
+            const container = document.getElementById('quickAccess');
+
+            menuItems.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'bg-white dark:bg-gray-700 p-4 rounded-lg shadow cursor-pointer hover:shadow-md hover:bg-blue-50 dark:hover:bg-gray-600 transition-all flex flex-col items-center justify-center text-center';
+                menuItem.innerHTML = `
+                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-2">
+                        <i class="${item.icon} text-blue-500 dark:text-blue-300 text-xl"></i>
+                    </div>
+                    <p class="text-gray-800 dark:text-gray-200">${item.name}</p>
+                `;
+
+                menuItem.addEventListener('click', function() {
+                    alert(`Bạn đã chọn ${item.name}`);
+                });
+
+                container.appendChild(menuItem);
+            });
+        }
+    </script>
+</body>
+</html>

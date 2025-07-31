@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Quản trị POS</title>
+    <!-- TailwindCSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            .dark-mode {
+                background-color: #1f2937;
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans dark:bg-gray-900 dark:text-white transition-colors duration-200">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Dashboard Quản trị</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1" id="greeting">Xin chào Admin – <span id="storeName">Nhà thuốc Hoàng Bảo</span></p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-[48px] h-[48px]">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                    <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white">
+                        <i class="fas fa-store text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Doanh thu hôm nay</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="revenue">1.200.000₫</p>
+                <p class="text-xs text-green-500 mt-2"><i class="fas fa-arrow-up mr-1"></i><span id="revenuePercent">12</span>% so với hôm qua</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Đơn hàng hôm nay</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="orders">35 đơn</p>
+                <p class="text-xs text-green-500 mt-2"><i class="fas fa-arrow-up mr-1"></i><span id="ordersPercent">8</span>% so với hôm qua</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Sản phẩm tồn kho</p>
+                <p class="text-2xl font-bold text-gray-800 dark:text-white" id="inventory">2.453 sp</p>
+                <p class="text-xs text-gray-500 mt-2"><i class="fas fa-boxes mr-1"></i>Cập nhật: Hôm nay</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Sản phẩm sắp hết hàng</p>
+                <p class="text-2xl font-bold text-red-500" id="lowStock">12 sản phẩm</p>
+                <p class="text-xs text-red-400 mt-2"><i class="fas fa-exclamation-circle mr-1"></i>Cần nhập thêm hàng</p>
+            </div>
+        </div>
+
+        <!-- Menu Sections -->
+        <div id="menu-container">
+            <!-- Menu items will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store data (normally would come from backend)
+            const storeData = {
+                name: "Nhà thuốc Hoàng Bảo",
+                today: {
+                    revenue: formatCurrency(Math.floor(Math.random() * 5000000)),
+                    orders: Math.floor(Math.random() * 100) + 1,
+                    inventory: Math.floor(Math.random() * 5000),
+                    lowStock: Math.floor(Math.random() * 30) + 1
+                },
+                percentChange: {
+                    revenue: Math.floor(Math.random() * 20) - 5,
+                    orders: Math.floor(Math.random() * 20) - 5
+                }
+            };
+
+            // Menu data structure with nested items
+            const quickAccessMenu = [
+                {
+                    group: "Quản lý hệ thống",
+                    items: [
+                        { name: "Cài đặt cửa hàng", icon: "fas fa-cog" },
+                        { name: "Quản lý người dùng", icon: "fas fa-users-cog" },
+                        { name: "Phân quyền", icon: "fas fa-user-shield" },
+                        { name: "Thiết lập chung", icon: "fas fa-sliders-h" }
+                    ]
+                },
+                {
+                    group: "Sản phẩm & Tồn kho",
+                    items: [
+                        { name: "Danh sách sản phẩm", icon: "fas fa-pills" },
+                        { name: "Nhập hàng", icon: "fas fa-truck-loading" },
+                        { name: "Kiểm kê kho", icon: "fas fa-clipboard-check" },
+                        { name: "Quản lý nhà cung cấp", icon: "fas fa-industry" },
+                        { name: "Điều chỉnh tồn kho", icon: "fas fa-boxes" },
+                        { name: "In mã vạch", icon: "fas fa-barcode" }
+                    ]
+                },
+                {
+                    group: "Bán hàng & Giao dịch",
+                    items: [
+                        { name: "Bán hàng tại quầy", icon: "fas fa-cash-register" },
+                        { name: "Hóa đơn bán hàng", icon: "fas fa-receipt" },
+                        { name: "Trả hàng & Hoàn tiền", icon: "fas fa-exchange-alt" },
+                        { name: "Đơn đặt hàng", icon: "fas fa-shopping-basket" }
+                    ]
+                },
+                {
+                    group: "Khách hàng & CRM",
+                    items: [
+                        { name: "Danh sách khách hàng", icon: "fas fa-user-friends" },
+                        { name: "Lịch sử mua hàng", icon: "fas fa-history" },
+                        { name: "Chương trình khuyến mãi", icon: "fas fa-gift" },
+                        { name: "Thẻ thành viên", icon: "fas fa-id-card" }
+                    ]
+                },
+                {
+                    group: "Thống kê & Báo cáo",
+                    items: [
+                        { name: "Báo cáo doanh thu", icon: "fas fa-chart-line" },
+                        { name: "Phân tích lợi nhuận", icon: "fas fa-coins" },
+                        { name: "Báo cáo tồn kho", icon: "fas fa-warehouse" },
+                        { name: "Thống kê khách hàng", icon: "fas fa-user-chart" },
+                        { name: "Xuất báo cáo", icon: "fas fa-file-export" }
+                    ]
+                },
+                {
+                    group: "Tiện ích",
+                    items: [
+                        { name: "Tiện ích mở rộng", icon: "fas fa-puzzle-piece" },
+                        { name: "Đồng bộ dữ liệu", icon: "fas fa-sync-alt" },
+                        { name: "Trung tâm hỗ trợ", icon: "fas fa-life-ring" }
+                    ]
+                },
+                {
+                    group: "Điều hướng",
+                    items: [
+                        { name: "Quay lại Danh sách cửa hàng", icon: "fas fa-arrow-left" }
+                    ]
+                }
+            ];
+
+            // Update store name
+            document.getElementById('storeName').textContent = storeData.name;
+
+            // Update summary cards
+            document.getElementById('revenue').textContent = storeData.today.revenue;
+            document.getElementById('orders').textContent = `${storeData.today.orders} đơn`;
+            document.getElementById('inventory').textContent = `${storeData.today.inventory} sp`;
+            document.getElementById('lowStock').textContent = `${storeData.today.lowStock} sản phẩm`;
+
+            document.getElementById('revenuePercent').textContent = storeData.percentChange.revenue;
+            document.getElementById('ordersPercent').textContent = storeData.percentChange.orders;
+
+            // Color the percentage changes
+            updatePercentageDisplay('revenuePercent', storeData.percentChange.revenue);
+            updatePercentageDisplay('ordersPercent', storeData.percentChange.orders);
+
+            // Generate menu with groups
+            generateGroupedMenu(quickAccessMenu);
+
+            // Set up event listeners
+            document.getElementById('darkModeToggle').addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+            });
+
+            // Check system preference for dark mode
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        });
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                maximumFractionDigits: 0
+            }).format(amount) + '₫';
+        }
+
+        function updatePercentageDisplay(elementId, value) {
+            const element = document.getElementById(elementId).parentElement;
+            if (value > 0) {
+                element.classList.remove('text-red-500');
+                element.classList.add('text-green-500');
+                element.querySelector('i').className = 'fas fa-arrow-up mr-1';
+            } else if (value < 0) {
+                element.classList.remove('text-green-500');
+                element.classList.add('text-red-500');
+                element.querySelector('i').className = 'fas fa-arrow-down mr-1';
+            } else {
+                element.classList.remove('text-green-500', 'text-red-500');
+                element.classList.add('text-gray-500');
+                element.querySelector('i').className = 'fas fa-minus mr-1';
+            }
+        }
+
+        function generateGroupedMenu(menuGroups) {
+            const menuContainer = document.getElementById('menu-container');
+
+            menuGroups.forEach(group => {
+                // Create group section
+                const groupSection = document.createElement('div');
+                groupSection.className = 'mb-10';
+
+                // Add group title
+                const groupTitle = document.createElement('h2');
+                groupTitle.className = 'text-xl font-bold text-gray-800 dark:text-white mb-4';
+                groupTitle.textContent = group.group;
+                groupSection.appendChild(groupTitle);
+
+                // Create items grid container
+                const itemsGrid = document.createElement('div');
+                itemsGrid.className = 'grid grid-cols-2 md:grid-cols-4 gap-4';
+
+                // Add individual menu items
+                group.items.forEach(item => {
+                    const menuItem = document.createElement('div');
+                    menuItem.className = 'bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer hover:shadow-md hover:bg-primary-50 dark:hover:bg-gray-700 transition-all flex flex-col items-center justify-center text-center';
+                    menuItem.innerHTML = `
+                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-3">
+                            <i class="${item.icon} text-primary-500 dark:text-primary-300 text-xl"></i>
+                        </div>
+                        <p class="text-gray-800 dark:text-gray-200">${item.name}</p>
+                    `;
+
+                    menuItem.addEventListener('click', function() {
+                        alert(`Bạn đã chọn: ${item.name}`);
+                    });
+
+                    itemsGrid.appendChild(menuItem);
+                });
+
+                groupSection.appendChild(itemsGrid);
+                menuContainer.appendChild(groupSection);
+            });
+        }
+    </script>
+</body>
+</html>
