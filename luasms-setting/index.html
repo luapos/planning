@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuaSMS Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #212121;
+            line-height: 1.5;
+        }
+
+        .app-bar {
+            background-color: #2196F3;
+            color: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-bar h1 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: calc(100vh - 64px);
+        }
+
+        .settings-content {
+            padding: 0;
+        }
+
+        .setting-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .setting-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #212121;
+        }
+
+        .setting-description {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 4px;
+        }
+
+        /* Material Design Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 32px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 16px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Input Fields */
+        .input-group {
+            margin-top: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #fafafa;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2196F3;
+            background-color: white;
+        }
+
+        .input-field::placeholder {
+            color: #999;
+        }
+
+        /* Number input specific styling */
+        .input-field[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .input-field[type="number"]::-webkit-outer-spin-button,
+        .input-field[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Save Button */
+        .save-section {
+            padding: 24px 20px;
+            background-color: #f5f5f5;
+        }
+
+        .save-button {
+            width: 100%;
+            padding: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        .save-button:hover {
+            background-color: #1976D2;
+        }
+
+        .save-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 4px rgba(33, 150, 243, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .app-bar {
+                padding: 12px 16px;
+            }
+
+            .setting-item {
+                padding: 12px 16px;
+            }
+
+            .save-section {
+                padding: 16px;
+            }
+        }
+
+        /* Focus visible for accessibility */
+        .switch:focus-within .slider {
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+        }
+
+        .save-button:focus {
+            outline: 2px solid #2196F3;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-bar">
+        <h1>LuaSMS Settings</h1>
+    </div>
+
+    <div class="container">
+        <div class="settings-content">
+            <!-- Auto Send SMS Toggle -->
+            <div class="setting-item">
+                <div class="setting-header">
+                    <div>
+                        <div class="setting-label">Auto Send SMS</div>
+                        <div class="setting-description">Automatically send SMS messages when received</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="autoSendToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- API Base URL -->
+            <div class="setting-item">
+                <div class="setting-label">API Base URL</div>
+                <div class="setting-description">The base URL for the SMS API endpoint</div>
+                <div class="input-group">
+                    <input
+                        type="url"
+                        id="apiBaseUrl"
+                        class="input-field"
+                        placeholder="https://luapos.com/api/sms"
+                    >
+                </div>
+            </div>
+
+            <!-- Token -->
+            <div class="setting-item">
+                <div class="setting-label">Authorization Token</div>
+                <div class="setting-description">API token for authentication</div>
+                <div class="input-group">
+                    <input
+                        type="password"
+                        id="token"
+                        class="input-field"
+                        placeholder="Bearer abc123..."
+                    >
+                </div>
+            </div>
+
+            <!-- Polling Interval -->
+            <div class="setting-item">
+                <div class="setting-label">Polling Interval (seconds)</div>
+                <div class="setting-description">How often to check for new messages (minimum 5 seconds)</div>
+                <div class="input-group">
+                    <input
+                        type="number"
+                        id="pollingInterval"
+                        class="input-field"
+                        value="10"
+                        min="5"
+                        step="1"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <div class="save-section">
+            <button class="save-button" onclick="saveSettings()">
+                Save Settings
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Load saved settings when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
+
+        function loadSettings() {
+            // Load settings from localStorage if available
+            const autoSend = localStorage.getItem('luasms_auto_send');
+            const apiUrl = localStorage.getItem('luasms_api_url');
+            const token = localStorage.getItem('luasms_token');
+            const interval = localStorage.getItem('luasms_polling_interval');
+
+            if (autoSend !== null) {
+                document.getElementById('autoSendToggle').checked = autoSend === 'true';
+            }
+
+            if (apiUrl) {
+                document.getElementById('apiBaseUrl').value = apiUrl;
+            }
+
+            if (token) {
+                document.getElementById('token').value = token;
+            }
+
+            if (interval) {
+                document.getElementById('pollingInterval').value = interval;
+            }
+        }
+
+        function saveSettings() {
+            // Get all form values
+            const autoSend = document.getElementById('autoSendToggle').checked;
+            const apiUrl = document.getElementById('apiBaseUrl').value.trim();
+            const token = document.getElementById('token').value.trim();
+            const interval = parseInt(document.getElementById('pollingInterval').value);
+
+            // Validate inputs
+            if (apiUrl && !isValidUrl(apiUrl)) {
+                alert('Please enter a valid API URL');
+                return;
+            }
+
+            if (interval < 5) {
+                alert('Polling interval must be at least 5 seconds');
+                document.getElementById('pollingInterval').value = 5;
+                return;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('luasms_auto_send', autoSend.toString());
+            localStorage.setItem('luasms_api_url', apiUrl);
+            localStorage.setItem('luasms_token', token);
+            localStorage.setItem('luasms_polling_interval', interval.toString());
+
+            // Show success message
+            alert('Settings saved');
+
+            // Optional: Add visual feedback
+            const saveButton = document.querySelector('.save-button');
+            const originalText = saveButton.textContent;
+            saveButton.textContent = 'Saved!';
+            saveButton.style.backgroundColor = '#4CAF50';
+
+            setTimeout(() => {
+                saveButton.textContent = originalText;
+                saveButton.style.backgroundColor = '#2196F3';
+            }, 1500);
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Add input validation for polling interval
+        document.getElementById('pollingInterval').addEventListener('input', function(e) {
+            const value = parseInt(e.target.value);
+            if (value < 5 && value !== '') {
+                e.target.value = 5;
+            }
+        });
+
+        // Toggle password visibility (optional enhancement)
+        document.getElementById('token').addEventListener('dblclick', function(e) {
+            const input = e.target;
+            if (input.type === 'password') {
+                input.type = 'text';
+                setTimeout(() => {
+                    input.type = 'password';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
