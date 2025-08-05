@@ -34,6 +34,8 @@ class SidebarManager {
         this.toggleIcon = document.getElementById('toggleIcon');
         this.mobileMenuButton = document.getElementById('mobileMenuButton');
         this.mobileOverlay = document.getElementById('mobileOverlay');
+        this.mobileMenuBtnContainer = document.getElementById('mobileMenuBtnContainer');
+        this.mobileSidebarClose = document.getElementById('mobileSidebarClose');
 
         this.isCollapsed = this.getSavedState();
         this.isMobileMenuOpen = false;
@@ -62,6 +64,11 @@ class SidebarManager {
         // Mobile menu
         this.mobileMenuButton.addEventListener('click', () => this.toggleMobileMenu());
         this.mobileOverlay.addEventListener('click', () => this.closeMobileMenu());
+
+        // Mobile close button
+        if (this.mobileSidebarClose) {
+            this.mobileSidebarClose.addEventListener('click', () => this.closeMobileMenu());
+        }
 
         // Handle window resize
         window.addEventListener('resize', () => this.handleResize());
@@ -121,6 +128,16 @@ class SidebarManager {
         this.mobileOverlay.classList.remove('hidden');
         this.mobileOverlay.style.opacity = '1';
         document.body.style.overflow = 'hidden';
+
+        // Show close button inside sidebar
+        if (this.mobileSidebarClose) {
+            this.mobileSidebarClose.classList.remove('hidden');
+        }
+
+        // Hide hamburger menu when sidebar is open on mobile
+        if (this.mobileMenuBtnContainer) {
+            this.mobileMenuBtnContainer.classList.add('hidden');
+        }
     }
 
     closeMobileMenu() {
@@ -131,6 +148,11 @@ class SidebarManager {
         }, 300);
         document.body.style.overflow = '';
         this.isMobileMenuOpen = false;
+
+        // Show hamburger menu when sidebar is closed
+        if (this.mobileMenuBtnContainer) {
+            this.mobileMenuBtnContainer.classList.remove('hidden');
+        }
     }
 
     handleResize() {

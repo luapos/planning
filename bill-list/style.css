@@ -54,8 +54,9 @@
     margin-right: 0 !important;
 }
 
-.sidebar-collapsed a,
-.sidebar-collapsed button {
+/* Modified selector to exclude hidden elements */
+.sidebar-collapsed a:not(.hidden):not([class*="md:hidden"]),
+.sidebar-collapsed button:not(.hidden):not([class*="md:hidden"]) {
     display: flex;
     justify-content: center;
     align-items: center;
