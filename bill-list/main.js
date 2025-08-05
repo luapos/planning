@@ -347,7 +347,123 @@ class SidebarManager {
     }
 }
 
+// Delete Confirmation Modal Management
+class DeleteConfirmationModal {
+    constructor() {
+        this.modal = document.getElementById('deleteConfirmationModal');
+        this.overlay = document.getElementById('modalOverlay');
+        this.confirmBtn = document.getElementById('confirmDeleteBtn');
+        this.cancelBtn = document.getElementById('cancelDeleteBtn');
+        this.currentDeleteButton = null;
+
+        // Initialize after DOM is fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
+    }
+
+    init() {
+        // Get the delete button
+        const deleteButton = document.getElementById('deleteBill');
+
+        if (!deleteButton) {
+            console.error('Delete button with ID "deleteBill" not found');
+            return;
+        }
+
+        // Add click event to the delete button
+        deleteButton.addEventListener('click', (e) => {
+            console.log('Delete button clicked');
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Store reference to the button that was clicked
+            this.currentDeleteButton = deleteButton;
+
+            // Show the modal
+            this.showModal();
+        });
+
+        // Set up event listeners for modal actions
+        if (this.confirmBtn) {
+            this.confirmBtn.addEventListener('click', () => this.handleConfirm());
+        } else {
+            console.error('Confirm button not found in modal');
+        }
+
+        if (this.cancelBtn) {
+            this.cancelBtn.addEventListener('click', () => this.hideModal());
+        } else {
+            console.error('Cancel button not found in modal');
+        }
+
+        if (this.overlay) {
+            this.overlay.addEventListener('click', () => this.hideModal());
+        } else {
+            console.error('Modal overlay not found');
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal && !this.modal.classList.contains('hidden')) {
+                this.hideModal();
+            }
+        });
+    }
+
+    showModal() {
+        this.modal.classList.remove('hidden');
+        // Add animation classes
+        this.modal.classList.add('animate-fade-in');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+
+    hideModal() {
+        this.modal.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scrolling
+        this.currentDeleteButton = null;
+    }
+
+    handleConfirm() {
+        // If we have a reference to the delete button that was clicked
+        if (this.currentDeleteButton) {
+            // Trigger the original delete action
+            // This simulates the original click event on the delete button
+            const originalEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+            });
+
+            // Store the button in a variable before hiding the modal
+            const buttonToClick = this.currentDeleteButton;
+
+            // First hide the modal
+            this.hideModal();
+
+            // Then execute the original delete logic
+            // We need to dispatch the event with a small delay to ensure
+            // our event handler doesn't catch it again
+            setTimeout(() => {
+                // Set a flag to indicate this click is from our confirmation
+                buttonToClick.setAttribute('data-confirmed', 'true');
+
+                // Dispatch the event
+                buttonToClick.dispatchEvent(originalEvent);
+
+                // Remove the flag
+                setTimeout(() => {
+                    buttonToClick.removeAttribute('data-confirmed');
+                }, 100);
+            }, 50);
+        }
+    }
+}
+
 // Initialize application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new SidebarManager();
+    new DeleteConfirmationModal();
 });
