@@ -200,56 +200,10 @@
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="space-y-4">
-                    <!-- Progress Bar Container -->
-                    <div class="relative">
-                        <div class="w-full bg-gray-100 rounded-full h-3">
-                            <div class="bg-gradient-to-r from-emerald-400 to-emerald-500 h-3 rounded-full transition-all duration-500"
-                                 style="width: 7.7%">
-                            </div>
-                        </div>
-                        <!-- Current Position Indicator -->
-                        <div class="absolute top-0 h-3 w-1 bg-emerald-600 rounded-full" style="left: 7.7%; margin-left: -2px;"></div>
-                    </div>
-
-                    <!-- Milestone Labels -->
-                    <div class="flex justify-between text-xs text-gray-500 px-1">
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium">0</span>
-                        </span>
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium">200K</span>
-                        </span>
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium">400K</span>
-                        </span>
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium">600K</span>
-                        </span>
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium">800K</span>
-                        </span>
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium">1M</span>
-                        </span>
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium">1.2M</span>
-                        </span>
-                        <span class="flex flex-col items-center">
-                            <span class="font-medium text-emerald-600">1.4M</span>
-                        </span>
-                    </div>
-
-                    <!-- Milestone Ticks -->
-                    <div class="relative flex justify-between px-1" style="margin-top: -8px;">
-                        <div class="w-0.5 h-2 bg-gray-300 rounded-full"></div>
-                        <div class="w-0.5 h-2 bg-gray-300 rounded-full"></div>
-                        <div class="w-0.5 h-2 bg-gray-300 rounded-full"></div>
-                        <div class="w-0.5 h-2 bg-gray-300 rounded-full"></div>
-                        <div class="w-0.5 h-2 bg-gray-300 rounded-full"></div>
-                        <div class="w-0.5 h-2 bg-gray-300 rounded-full"></div>
-                        <div class="w-0.5 h-2 bg-gray-300 rounded-full"></div>
-                        <div class="w-0.5 h-2 bg-emerald-500 rounded-full"></div>
+                <div class="space-y-6 md:space-y-3">
+                    <!-- Chart.js Horizontal Bar Chart -->
+                    <div class="w-full h-24">
+                        <canvas id="kpiChart" class="w-full"></canvas>
                     </div>
                 </div>
 
@@ -480,5 +434,119 @@
         </div>
     </main>
     <script src="main.js"></script>
+
+    <!-- Chart.js KPI Chart Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the canvas element
+            const ctx = document.getElementById('kpiChart').getContext('2d');
+
+            // Data values
+            const currentProfit = 108300;
+            const targetKPI = 1400000;
+
+            // Create the chart
+            const kpiChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lợi nhuận hiện tại'],
+                    datasets: [{
+                        label: 'Lợi nhuận hiện tại',
+                        data: [currentProfit],
+                        backgroundColor: '#10b981', // emerald-500 from Tailwind
+                        borderColor: '#059669', // emerald-600 from Tailwind
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        barPercentage: 0.5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += new Intl.NumberFormat('vi-VN').format(context.parsed.x) + 'đ';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: targetKPI,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value === 0) return '0';
+                                    if (value === 200000) return '200K';
+                                    if (value === 400000) return '400K';
+                                    if (value === 600000) return '600K';
+                                    if (value === 800000) return '800K';
+                                    if (value === 1000000) return '1M';
+                                    if (value === 1200000) return '1.2M';
+                                    if (value === 1400000) return '1.4M';
+                                    return '';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(209, 213, 219, 0.5)' // gray-300 with opacity
+                            }
+                        },
+                        y: {
+                            display: false // Hide Y axis labels
+                        }
+                    }
+                }
+            });
+
+            // Add a custom annotation plugin to display the current value at the end of the bar
+            const originalDraw = kpiChart.draw;
+            kpiChart.draw = function() {
+                originalDraw.apply(this, arguments);
+
+                const chart = this;
+                const ctx = chart.ctx;
+                const meta = chart.getDatasetMeta(0);
+                const bar = meta.data[0];
+
+                // If the bar exists
+                if (bar) {
+                    const barWidth = bar.width;
+                    const barHeight = bar.height;
+                    const barX = bar.x;
+                    const barY = bar.y;
+
+                    // Set text style
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = '#065f46'; // emerald-800
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'middle';
+
+                    // Calculate text position
+                    const textX = barX + 10; // Add some padding
+                    const textY = barY;
+
+                    // Format and draw the value
+                    const formattedValue = new Intl.NumberFormat('vi-VN').format(currentProfit) + 'đ';
+                    ctx.fillText(formattedValue, textX, textY);
+                }
+            };
+
+            // Initial draw
+            kpiChart.update();
+        });
+    </script>
 </body>
 </html>
