@@ -74,25 +74,36 @@ class SidebarManager {
     }
 
     updateSidebar() {
-        if (this.isCollapsed) {
-            this.collapseSidebar();
-        } else {
-            this.expandSidebar();
+        if (window.innerWidth >= 768) {
+            // Only apply margin changes on desktop/tablet
+            if (this.isCollapsed) {
+                this.collapseSidebar();
+            } else {
+                this.expandSidebar();
+            }
         }
     }
 
     collapseSidebar() {
         this.sidebar.classList.add('sidebar-collapsed');
         this.sidebar.style.width = '4rem';
-        this.mainContent.style.marginLeft = '4rem';
         this.toggleIcon.style.transform = 'rotate(180deg)';
+
+        // Only adjust mainContent on md: and up screens
+        if (window.innerWidth >= 768) {
+            this.mainContent.style.marginLeft = '4rem';
+        }
     }
 
     expandSidebar() {
         this.sidebar.classList.remove('sidebar-collapsed');
         this.sidebar.style.width = '16rem';
-        this.mainContent.style.marginLeft = '16rem';
         this.toggleIcon.style.transform = 'rotate(0deg)';
+
+        // Only adjust mainContent on md: and up screens
+        if (window.innerWidth >= 768) {
+            this.mainContent.style.marginLeft = '16rem';
+        }
     }
 
     toggleMobileMenu() {
@@ -123,8 +134,8 @@ class SidebarManager {
     }
 
     handleResize() {
-        if (window.innerWidth >= 1024) {
-            // Desktop
+        if (window.innerWidth >= 768) {
+            // Desktop/tablet
             this.sidebar.style.transform = '';
             this.mobileOverlay.classList.add('hidden');
             document.body.style.overflow = '';
@@ -134,7 +145,9 @@ class SidebarManager {
             // Mobile
             this.sidebar.classList.remove('sidebar-collapsed');
             this.sidebar.style.width = '16rem';
-            this.mainContent.style.marginLeft = '0';
+
+            // Never modify mainContent margin on mobile
+            this.mainContent.style.marginLeft = '';
 
             if (!this.isMobileMenuOpen) {
                 this.sidebar.style.transform = 'translateX(-100%)';
