@@ -18,12 +18,12 @@
     </div>
 
     <!-- Unified Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 flex flex-col h-screen">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 flex flex-col h-screen overflow-y-auto shadow-lg">
 
         <!-- App Header -->
-        <div class="flex items-center h-16 px-6 border-b border-gray-200 flex-shrink-0">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+        <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200 flex-shrink-0">
+            <div class="flex items-center space-x-3 w-full transition-all duration-300">
+                <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0 sidebar-logo-container">
                     <i class="fas fa-robot text-emerald-600"></i>
                 </div>
                 <div class="sidebar-text">
@@ -150,10 +150,10 @@
     </aside>
 
     <!-- Mobile Overlay -->
-    <div id="mobileOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden hidden"></div>
+    <div id="mobileOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden hidden transition-opacity duration-300 ease-in-out"></div>
 
     <!-- Main Content -->
-    <main id="mainContent" class="md:ml-64 min-h-screen transition-all duration-300 ease-in-out">
+    <main id="mainContent" class="md:ml-64 min-h-screen transition-all duration-300 ease-in-out pt-16 md:pt-0">
         <!-- Content Header -->
         <div class="bg-white border-b border-gray-200 px-6 py-4">
             <div class="flex items-center justify-between">

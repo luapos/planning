@@ -108,12 +108,16 @@ class SidebarManager {
     openMobileMenu() {
         this.sidebar.style.transform = 'translateX(0)';
         this.mobileOverlay.classList.remove('hidden');
+        this.mobileOverlay.style.opacity = '1';
         document.body.style.overflow = 'hidden';
     }
 
     closeMobileMenu() {
         this.sidebar.style.transform = 'translateX(-100%)';
-        this.mobileOverlay.classList.add('hidden');
+        this.mobileOverlay.style.opacity = '0';
+        setTimeout(() => {
+            this.mobileOverlay.classList.add('hidden');
+        }, 300);
         document.body.style.overflow = '';
         this.isMobileMenuOpen = false;
     }
