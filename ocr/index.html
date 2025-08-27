@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Demo - PDF to Text Extraction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-bg {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .step-transition {
+            transition: all 0.5s ease;
+        }
+
+        .grid-overlay {
+            background-image: linear-gradient(to right, rgba(0, 0, 255, 0.2) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(0, 0, 255, 0.2) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4 md:p-6">
+    <div class="card-bg rounded-2xl shadow-2xl max-w-4xl w-full mx-auto overflow-hidden">
+        <!-- Header -->
+        <div class="bg-white bg-opacity-80 p-6 border-b border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-800 text-center">PDF to Text Extraction</h1>
+            <p class="text-gray-600 text-center mt-2">Upload a PDF and extract text from images</p>
+        </div>
+
+        <!-- Progress Stepper -->
+        <div class="flex justify-between px-6 md:px-10 pt-6">
+            <div class="step-container flex flex-col items-center w-1/4">
+                <div id="step1-indicator" class="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold step-transition">1</div>
+                <p class="mt-2 text-xs md:text-sm text-center">Upload PDF</p>
+            </div>
+            <div class="step-container flex flex-col items-center w-1/4">
+                <div id="step2-indicator" class="h-10 w-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold step-transition">2</div>
+                <p class="mt-2 text-xs md:text-sm text-center">Generate Images</p>
+            </div>
+            <div class="step-container flex flex-col items-center w-1/4">
+                <div id="step3-indicator" class="h-10 w-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold step-transition">3</div>
+                <p class="mt-2 text-xs md:text-sm text-center">Slice Images</p>
+            </div>
+            <div class="step-container flex flex-col items-center w-1/4">
+                <div id="step4-indicator" class="h-10 w-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center font-bold step-transition">4</div>
+                <p class="mt-2 text-xs md:text-sm text-center">Extract Text</p>
+            </div>
+        </div>
+
+        <!-- Progress Line -->
+        <div class="relative h-1 mx-12 mt-5 mb-8">
+            <div class="absolute top-0 left-0 right-0 h-full bg-gray-300 rounded-full"></div>
+            <div id="progress-bar" class="absolute top-0 left-0 h-full w-1/4 bg-indigo-600 rounded-full step-transition"></div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="p-6 md:p-10">
+            <!-- Step 1: Upload PDF -->
+            <div id="step1" class="step-content block">
+                <div id="upload-area" class="file-upload-area rounded-xl p-10 text-center cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <h3 class="text-xl font-medium text-gray-700 mt-4">Drag and Drop PDF Here</h3>
+                    <p class="text-gray-500 mt-2">Or click to browse</p>
+                    <input id="file-input" type="file" accept="application/pdf" class="hidden" />
+                    <button id="mock-upload-btn" class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105">
+                        Upload PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: PDF to Images -->
+            <div id="step2" class="step-content hidden">
+                <h3 class="text-xl font-medium text-gray-700 mb-4">Converting PDF to Images</h3>
+                <div class="space-y-4">
+                    <div id="conversion-progress" class="w-full bg-gray-200 rounded-full h-4">
+                        <div id="conversion-progress-bar" class="bg-indigo-600 h-4 rounded-full w-0 step-transition"></div>
+                    </div>
+
+                    <div id="image-previews" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <!-- Image previews will be inserted here -->
+                    </div>
+
+                    <div class="flex justify-end mt-6">
+                        <button id="step2-next" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 hidden">
+                            Next: Slice Images
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Image Slicing -->
+            <div id="step3" class="step-content hidden">
+                <h3 class="text-xl font-medium text-gray-700 mb-4">Slicing Images</h3>
+                <div id="slicing-area" class="space-y-8">
+                    <!-- Slicing grid and thumbnails will be inserted here -->
+                </div>
+                <div class="flex justify-end mt-6">
+                    <button id="step3-next" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105">
+                        Next: Extract Text
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Text Extraction -->
+            <div id="step4" class="step-content hidden">
+                <h3 class="text-xl font-medium text-gray-700 mb-4">Extracted Text</h3>
+
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="w-full md:w-1/3">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-700 mb-2">Image Sections</h4>
+                            <div id="slice-thumbnails" class="grid grid-cols-2 gap-2">
+                                <!-- Slice thumbnails will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-2/3">
+                        <div class="bg-gray-100 p-4 rounded-lg h-full">
+                            <h4 class="font-medium text-gray-700 mb-2">Recognized Text</h4>
+                            <pre id="extracted-text" class="bg-gray-800 text-green-400 p-4 rounded-md font-mono text-sm h-64 overflow-y-auto">
+# Text extraction in progress...
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <button id="restart-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105">
+                        Start Over
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock PDF Images - Base64 encoded placeholders
+        const mockPdfImages = [
+            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjVmNWY1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzMzMyI+UGFnZSAxIC0gSW52b2ljZTwvdGV4dD48L3N2Zz4=',
+            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjVmNWY1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzMzMyI+UGFnZSAyIC0gRGV0YWlsczwvdGV4dD48L3N2Zz4='
+        ];
+
+        // Mock Extracted Text
+        const mockExtractedText = [
+            '# INVOICE #12345\n\nDate: August 27, 2025\nCustomer: John Smith\n\n## Items\n1. Web Development - $2,000\n2. UI/UX Design - $1,500\n\nTotal: $3,500',
+            '# PAYMENT DETAILS\n\nPayment Method: Credit Card\nDue Date: September 15, 2025\n\n## Notes\nThank you for your business!\nPlease contact us with any questions.'
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            const mockUploadBtn = document.getElementById('mock-upload-btn');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const step4 = document.getElementById('step4');
+            const progressBar = document.getElementById('progress-bar');
+            const conversionProgressBar = document.getElementById('conversion-progress-bar');
+            const imagePreviews = document.getElementById('image-previews');
+            const step2Next = document.getElementById('step2-next');
+            const step3Next = document.getElementById('step3-next');
+            const restartBtn = document.getElementById('restart-btn');
+
+            const stepIndicators = {
+                1: document.getElementById('step1-indicator'),
+                2: document.getElementById('step2-indicator'),
+                3: document.getElementById('step3-indicator'),
+                4: document.getElementById('step4-indicator')
+            };
+
+            // Initialize state
+            let currentStep = 1;
+
+            // Handle file upload
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', handleFileSelection);
+
+            // For demo purposes, trigger the mock upload
+            mockUploadBtn.addEventListener('click', mockFileUpload);
+
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('border-indigo-500');
+                uploadArea.classList.add('bg-indigo-50');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('border-indigo-500');
+                uploadArea.classList.remove('bg-indigo-50');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('border-indigo-500');
+                uploadArea.classList.remove('bg-indigo-50');
+
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length) {
+                    fileInput.files = files;
+                    handleFileSelection();
+                }
+            });
+
+            // Step navigation
+            step2Next.addEventListener('click', () => goToStep(3));
+            step3Next.addEventListener('click', () => goToStep(4));
+            restartBtn.addEventListener('click', resetWorkflow);
+
+            function handleFileSelection() {
+                const files = fileInput.files;
+                if (files.length && files[0].type === 'application/pdf') {
+                    mockFileUpload();
+                }
+            }
+
+            function mockFileUpload() {
+                goToStep(2);
+                simulateImageConversion();
+            }
+
+            function goToStep(step) {
+                // Hide all steps
+                [step1, step2, step3, step4].forEach(el => el.classList.add('hidden'));
+
+                // Show the current step
+                switch (step) {
+                    case 1:
+                        step1.classList.remove('hidden');
+                        break;
+                    case 2:
+                        step2.classList.remove('hidden');
+                        break;
+                    case 3:
+                        step3.classList.remove('hidden');
+                        showSlicingDemo();
+                        break;
+                    case 4:
+                        step4.classList.remove('hidden');
+                        showTextExtractionDemo();
+                        break;
+                }
+
+                // Update progress indicators
+                for (let i = 1; i <= 4; i++) {
+                    if (i <= step) {
+                        stepIndicators[i].classList.remove('bg-gray-300', 'text-gray-600');
+                        stepIndicators[i].classList.add('bg-indigo-600', 'text-white');
+                    } else {
+                        stepIndicators[i].classList.add('bg-gray-300', 'text-gray-600');
+                        stepIndicators[i].classList.remove('bg-indigo-600', 'text-white');
+                    }
+                }
+
+                // Update progress bar
+                progressBar.style.width = `${(step - 1) * 33.33}%`;
+                if (step === 4) progressBar.style.width = '100%';
+
+                currentStep = step;
+            }
+
+            function simulateImageConversion() {
+                // Clear previous previews
+                imagePreviews.innerHTML = '';
+
+                // Reset and show progress bar animation
+                conversionProgressBar.style.width = '0%';
+
+                // Simulate progress
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    conversionProgressBar.style.width = `${progress}%`;
+
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        displayImagePreviews();
+                        step2Next.classList.remove('hidden');
+                    }
+                }, 100);
+            }
+
+            function displayImagePreviews() {
+                mockPdfImages.forEach((imgSrc, index) => {
+                    const previewCard = document.createElement('div');
+                    previewCard.className = 'bg-white rounded-lg p-4 shadow-sm';
+                    previewCard.innerHTML = `
+                        <div class="relative">
+                            <img src="${imgSrc}" alt="Page ${index + 1}" class="w-full h-auto rounded-md">
+                            <div class="absolute top-2 left-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded">Page ${index + 1}</div>
+                        </div>
+                    `;
+                    imagePreviews.appendChild(previewCard);
+                });
+            }
+
+            function showSlicingDemo() {
+                const slicingArea = document.getElementById('slicing-area');
+                slicingArea.innerHTML = '';
+
+                // Create slicing demo for each page
+                mockPdfImages.forEach((imgSrc, index) => {
+                    const pageContainer = document.createElement('div');
+                    pageContainer.className = 'space-y-4';
+
+                    // Original image with grid overlay
+                    pageContainer.innerHTML = `
+                        <h4 class="font-medium text-gray-700">Page ${index + 1}</h4>
+                        <div class="relative mx-auto w-full max-w-md">
+                            <img src="${imgSrc}" alt="Page ${index + 1}" class="w-full h-auto rounded-md">
+                            <div class="grid-overlay absolute inset-0 opacity-0 transition-opacity duration-1000" id="grid-overlay-${index}"></div>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2" id="slices-container-${index}">
+                            <!-- Slices will be inserted here -->
+                        </div>
+                    `;
+
+                    slicingArea.appendChild(pageContainer);
+
+                    // Animate grid overlay appearing
+                    setTimeout(() => {
+                        const gridOverlay = document.getElementById(`grid-overlay-${index}`);
+                        gridOverlay.style.opacity = '1';
+
+                        // After grid appears, show slices
+                        setTimeout(() => {
+                            generateImageSlices(imgSrc, index);
+                        }, 1000);
+                    }, 500 * (index + 1));
+                });
+            }
+
+            function generateImageSlices(imgSrc, pageIndex) {
+                const slicesContainer = document.getElementById(`slices-container-${pageIndex}`);
+
+                // Create 8 slices for each page
+                for (let i = 0; i < 8; i++) {
+                    const slice = document.createElement('div');
+                    slice.className = 'bg-white p-2 rounded shadow-sm transform scale-0 transition-transform duration-300';
+                    slice.style.transformOrigin = 'center';
+
+                    // Create a modified version of the image to simulate a slice
+                    slice.innerHTML = `
+                        <div class="relative">
+                            <img src="${imgSrc}" alt="Slice ${i + 1}" class="w-full h-auto rounded">
+                            <div class="absolute inset-0 bg-indigo-600 bg-opacity-10"></div>
+                            <div class="absolute top-1 left-1 bg-indigo-600 text-white text-xs px-1 rounded">S${i + 1}</div>
+                        </div>
+                    `;
+
+                    slicesContainer.appendChild(slice);
+
+                    // Animate the slice appearing
+                    setTimeout(() => {
+                        slice.style.transform = 'scale(1)';
+                    }, 150 * i);
+                }
+            }
+
+            function showTextExtractionDemo() {
+                const extractedText = document.getElementById('extracted-text');
+                const sliceThumbnails = document.getElementById('slice-thumbnails');
+
+                // Clear previous content
+                sliceThumbnails.innerHTML = '';
+                extractedText.innerHTML = '# Text extraction in progress...';
+
+                // Add slice thumbnails
+                for (let i = 0; i < 8; i++) {
+                    const thumbnail = document.createElement('div');
+                    thumbnail.className = 'bg-white p-1 rounded shadow-sm cursor-pointer hover:bg-indigo-50';
+                    thumbnail.innerHTML = `
+                        <div class="relative">
+                            <img src="${mockPdfImages[i % 2]}" alt="Slice ${i + 1}" class="w-full h-auto rounded">
+                            <div class="absolute top-0 left-0 bg-indigo-600 text-white text-xs px-1 rounded">S${i + 1}</div>
+                        </div>
+                    `;
+
+                    // Make thumbnails clickable to show different text sections
+                    thumbnail.addEventListener('click', () => {
+                        showTextForSlice(i);
+                    });
+
+                    sliceThumbnails.appendChild(thumbnail);
+                }
+
+                // Simulate text extraction with typing effect
+                simulateTextTyping();
+            }
+
+            function simulateTextTyping() {
+                const extractedText = document.getElementById('extracted-text');
+                const text = mockExtractedText[0];
+                extractedText.innerHTML = '';
+
+                let i = 0;
+                function typeEffect() {
+                    if (i < text.length) {
+                        extractedText.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typeEffect, 25);
+                    }
+                }
+
+                typeEffect();
+            }
+
+            function showTextForSlice(sliceIndex) {
+                const extractedText = document.getElementById('extracted-text');
+
+                // Use different mock text based on odd/even slice index
+                const text = mockExtractedText[sliceIndex % 2];
+
+                // Update the text with a typing effect
+                extractedText.innerHTML = '';
+
+                let i = 0;
+                function typeEffect() {
+                    if (i < text.length) {
+                        extractedText.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typeEffect, 25);
+                    }
+                }
+
+                typeEffect();
+            }
+
+            function resetWorkflow() {
+                // Reset to the beginning
+                goToStep(1);
+
+                // Clear all dynamic content
+                imagePreviews.innerHTML = '';
+                document.getElementById('slicing-area').innerHTML = '';
+                document.getElementById('slice-thumbnails').innerHTML = '';
+                document.getElementById('extracted-text').innerHTML = '# Text extraction in progress...';
+
+                // Reset progress bar
+                conversionProgressBar.style.width = '0%';
+                step2Next.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
+
